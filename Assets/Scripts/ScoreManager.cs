@@ -49,34 +49,29 @@ public class ScoreManager : MonoBehaviour
         }
     }
 
-    public void LoseLife()
-    {
-        lives--;
-        UpdateUI();
 
-        if (lives <= 0)
-        {
-            GameOver();
-        }
-    }
 
     void UpdateUI()
     {
+        // تحديث عداد النقاط إذا كان موجوداً
         if (scoreText != null)
         {
-            scoreText.text = "Bananas: " + score + " / " + winningScore;
+            scoreText.text = "Score: " + score;
         }
 
-        // تحديث ظهور القلوب بناءً على عدد الأرواح المتبقية
+        // تحديث صور القلوب بطريقة آمنة
         for (int i = 0; i < hearts.Length; i++)
         {
-            if (i < lives)
+            if (hearts[i] != null)
             {
-                hearts[i].SetActive(true); // إظهار القلب إذا كان ضمن الأرواح المتبقية
-            }
-            else
-            {
-                hearts[i].SetActive(false); // إخفاء القلب إذا خسر روحه
+                if (i < lives)
+                {
+                    hearts[i].SetActive(true); // إظهار القلب إذا كان عدد الأرواح يكفي
+                }
+                else
+                {
+                    hearts[i].SetActive(false); // إخفاء القلب إذا تم خسارته
+                }
             }
         }
     }
@@ -95,5 +90,21 @@ public class ScoreManager : MonoBehaviour
     {
         Debug.Log("Game Over!");
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+    public void LoseLife()
+    {
+        lives--;
+        UpdateUI();
+
+        // تشغيل صوت خسارة القلب
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlayHurtSound();
+        }
+
+        if (lives <= 0)
+        {
+            GameOver();
+        }
     }
 }
